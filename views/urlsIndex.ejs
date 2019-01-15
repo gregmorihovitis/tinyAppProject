@@ -3,11 +3,14 @@
 <head>
   <title>TinyApp</title>
 </head>
+<header>
+    <% include ./partials/_header.ejs %>
+</header>
 <body>
     <h2>URLS:</h2>
       <ul>
         <% urls.forEach(function(url) { %>
-          <li><%= url.shortened %> = <%= url.original %></li>
+          <li><%= url%></li>
         <% }); %>
       </ul>
     <h3 href = '#'>Shorten a URL</h3>

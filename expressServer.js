@@ -2,8 +2,8 @@ let express = require("express");
 let app = express();
 let PORT = 8080;
 let  urlDatabase = [
-{ shortened: "b2xVn2", original: "http://www.lighthouselabs.ca"},
-{ shortened: "9sm5xK", original: "http://www.google.com" }
+{"b2xVn2": "http://www.lighthouselabs.ca"},
+{"9sm5xK": "http://www.google.com" }
 ];
 
 app.set('view engine', 'ejs');
@@ -18,6 +18,13 @@ app.get("/urls", (req, res) => {
   res.render("urlsIndex", urlObjs);
 });
 
+app.get("/urls/:id", (req, res) => {
+  let keyIndex = findObj(urlDatabase, req.params.id);
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase, keyIndex: keyIndex};
+
+  res.render("urlsShow", templateVars);
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
@@ -29,3 +36,15 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function findObj(objArray, key){
+  let keyIndex = 0;
+
+  for(urls of objArray){
+    if (urls[key]){
+      keyIndex = objArray.indexOf(urls);
+    }
+  }
+
+  return keyIndex;
+}
