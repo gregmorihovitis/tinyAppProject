@@ -1,15 +1,21 @@
 let express = require("express");
 let app = express();
 let PORT = 8080;
-let  urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+let  urlDatabase = [
+{ shortened: "b2xVn2", original: "http://www.lighthouselabs.ca"},
+{ shortened: "9sm5xK", original: "http://www.google.com" }
+];
 
 app.set('view engine', 'ejs');
 
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+
+app.get("/urls", (req, res) => {
+  let urlObjs = { urls: urlDatabase };
+
+  res.render("urlsIndex", urlObjs);
 });
 
 app.get("/urls.json", (req, res) => {
