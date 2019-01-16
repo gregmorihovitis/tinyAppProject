@@ -38,14 +38,16 @@ app.get("/urls/:id", (req, res) => {
   res.render("urlsShow", templateVars);
 });
 
-//edit the longURL
-app.get("/urls/:id/edit", (req, res) => {
-  res.redirect(`/urls/${req.params.id}`);
-});
 
 //delete, beginning of post calls
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
+  res.redirect(`http://localhost:8080/urls`);
+});
+
+//edit the long url
+app.post("/urls/:id/edit", (req, res) => {
+  urlDatabase[req.params.id] = req.body.newLongURL;
   res.redirect(`http://localhost:8080/urls`);
 });
 

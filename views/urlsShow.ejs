@@ -9,10 +9,10 @@
 <body>
     <h2>shortURL to modify:</h2>
           <p><%= shortURL %></p>
-    <form action="/urls" method="POST" style="margin:150px;">
+    <form action="/urls/<%=shortURL%>/edit" method="POST" style="margin:150px;">
       <label for="newLongURL">Enter a new URL:</label>
       <input id="newLongURL" type="text" name="newLongURL" placeholder="<%= longURL%>" style="width: 300px">
-      <input type="submit" value="Submit">
+      <button>Update</button>
     </form>
 </body>
 </html>
