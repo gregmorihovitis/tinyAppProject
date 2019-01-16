@@ -12,23 +12,25 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
 
-
+//new urls
 app.get("/urls/new", (req, res) => {
   res.render("urlsNew");
 });
 
-
+//all urls
 app.get("/urls", (req, res) => {
   let urlObjs = {urls: urlDatabase};
 
   res.render("urlsIndex", urlObjs);
 });
 
+//redirect to the long url using the short url
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
+//
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
 
