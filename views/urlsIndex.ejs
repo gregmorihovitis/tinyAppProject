@@ -10,9 +10,12 @@
     <h2>URLS:</h2>
       <ul>
         <% for(url in urls){ %>
-          <li> <%= url %> : <%= urls[url]%></li>
+          <form method="POST" action="/urls/<%=url%>/delete">
+            <li> <%= url %> : <%= urls[url]%> <a href = 'http://localhost:8080/urls/<%=url%>'>Edit</a> <input type="submit" value="Delete this"></li>
+            <br>
+          </form>
         <% }; %>
       </ul>
-    <h3 href = './urlsNew'>Shorten a URL</h3>
+    <h3><a href = "http://localhost:8080/urls/new">Shorten a URL</a></h3>
 </body>
 </html>

@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('view engine', 'ejs');
 
+
 //new urls
 app.get("/urls/new", (req, res) => {
   res.render("urlsNew");
@@ -37,11 +38,23 @@ app.get("/urls/:id", (req, res) => {
   res.render("urlsShow", templateVars);
 });
 
+//edit the longURL
+app.get("/urls/:id/edit", (req, res) => {
+  res.redirect(`/urls/${req.params.id}`);
+});
+
+//delete, beginning of post calls
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect(`http://localhost:8080/urls`);
+});
+
+//add url to database
 app.post("/urls", (req, res) => {
   // console.log(req.body);
-  let shortURL = urlGeneration(); // debug statement to see POST parameters
+  let shortURL = urlGeneration();
   urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`http://localhost:8080/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`http://localhost:8080/urls`);
 });
 
 app.get("/", (req, res) => {

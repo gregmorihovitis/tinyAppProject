@@ -7,7 +7,12 @@
     <% include ./partials/_header.ejs %>
 </header>
 <body>
-    <h2>URL:</h2>
-          <p><%= shortURL %> = <%= longURL %></p>
+    <h2>shortURL to modify:</h2>
+          <p><%= shortURL %></p>
+    <form action="/urls" method="POST" style="margin:150px;">
+      <label for="newLongURL">Enter a new URL:</label>
+      <input id="newLongURL" type="text" name="newLongURL" placeholder="<%= longURL%>" style="width: 300px">
+      <input type="submit" value="Submit">
+    </form>
 </body>
 </html>
