@@ -7,6 +7,19 @@ let  urlDatabase = {
 "9sm5xK": "http://www.google.com"
 };
 
+const userDatabase = {
+    "user": {
+    id: "user",
+    email: "user@example.com",
+    password: "purplemonkeydinosaur"
+  },
+ "user2": {
+    id: "user2",
+    email: "user2@example.com",
+    password: "dishwasherfunk"
+  }
+};
+
 
 const bodyParser = require("body-parser");
 
@@ -36,11 +49,20 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-//
+app.get("/register", (req, res) => {
+  let templateVars = {users: userDatabase};
+
+  res.render('register', templateVars);
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"]};
 
   res.render("urlsShow", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  res.redirect('http://localhost:8080/urls');
 });
 
 //logouts the user
@@ -54,7 +76,7 @@ app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect(`http://localhost:8080/urls`);
 });
-//delete, beginning of post calls
+//delete
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect(`http://localhost:8080/urls`);
