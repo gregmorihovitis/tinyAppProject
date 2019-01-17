@@ -8,7 +8,7 @@ let  urlDatabase = {
 };
 
 const userDatabase = {
-    "user": {
+  "user": {
     id: "user",
     email: "user@example.com",
     password: "purplemonkeydinosaur"
@@ -17,6 +17,11 @@ const userDatabase = {
     id: "user2",
     email: "user2@example.com",
     password: "dishwasherfunk"
+  },
+  'user3': {
+    id: 'user3',
+    email: 'email',
+    password: 'password'
   }
 };
 
@@ -31,14 +36,14 @@ app.set('view engine', 'ejs');
 
 //new urls
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]}
+  let templateVars = {user: userDatabase[req.cookies["userId"]]}
 
-  res.render("urlsNew");
+  res.render("urlsNew", templateVars);
 });
 
 //all urls
 app.get("/urls", (req, res) => {
-  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
+  let templateVars = {urls: urlDatabase, user: userDatabase[req.cookies["userId"]]};
 
   res.render("urlsIndex", templateVars);
 });
@@ -49,31 +54,84 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-app.get("/register", (req, res) => {
-  let templateVars = {users: userDatabase};
+app.get("/login", (req, res) => {
+  res.render('login');
+});
 
-  res.render('register', templateVars);
+app.get("/register", (req, res) => {
+  res.render('register');
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"]};
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], user: userDatabase[req.cookies["userId"]]};
 
   res.render("urlsShow", templateVars);
 });
 
+
+//end of get / start of psot
+
+
+app.post("/login", (req, res) => {
+  let validEmail = false;
+  let validPassword = false;
+
+  for(user in userDatabase){
+    if(userDatabase[user].email === req.body.email){
+      validEmail = true;
+
+      if(userDatabase[user].password === req.body.password){
+        validPassword = true;
+        res.cookie('userId', userDatabase[user].id);
+        break;
+      }
+    }
+  }
+
+
+  if(!validEmail || !validPassword){
+    res.status(400).send('Sorry, incorrect email or password.');
+  }
+    res.redirect('http://localhost:8080/urls');
+});
+
 app.post("/register", (req, res) => {
-  res.redirect('http://localhost:8080/urls');
+  let randomId = urlGeneration();
+  let invalid = false;
+
+  for(user in userDatabase){
+    if(userDatabase[user].email === req.body.email){
+      invalid = true;
+      break;
+    }
+
+    invalid = false;
+  }
+
+  if(req.body.email === "" || req.body.password === ""){
+    res.status(400).send('Sorry, blank email or password.');
+  }
+
+  else if(invalid === true){
+    res.status(400).send('Sorry, that email is already in use.');
+  }
+
+  else{
+    res.cookie('userId', randomId);
+    userDatabase[randomId] = {id: randomId, email: req.body.email, password: req.body.password};
+    res.redirect('http://localhost:8080/urls');
+  }
 });
 
 //logouts the user
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body.username);
+  res.clearCookie('userId', req.body.userId);
   res.redirect(`http://localhost:8080/urls`);
 });
 
 //logins the user
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  res.cookie('userId', req.body.userId);
   res.redirect(`http://localhost:8080/urls`);
 });
 //delete

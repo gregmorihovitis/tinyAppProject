@@ -1,15 +1,14 @@
 <!-- views/partials/_header.ejs -->
 <meta charset="UTF-8">
 <title>TinyApp</title>
-<% if(username === undefined){ %>
-  <form action="/login" method="POST" style="margin:5px;">
-    <label for="username">Username:</label>
-    <input id="username" type="text" name="username" style="width: 125px">
-    <button>Login</button>
-  </form>
+<% if(user === undefined){ %>
+  <p>
+    <a href = "http://localhost:8080/login">Login</a>
+    <a href = "http://localhost:8080/register">Register</a>
+  </p>
 <%} else { %>
   <form action="/logout" method="POST" style="margin:5px;">
-    <label>Logged in as <%= username %></label>
+    <label>Logged in as <%= user.email  %></label>
     <button>Logout</button>
   </form>
 <% } %>
