@@ -1,28 +1,33 @@
-let express = require("express");
-let app = express();
-let PORT = 8080;
+const express = require("express");
+const app = express();
+const PORT = 8080;
+const cookieParser = require('cookie-parser');
 let  urlDatabase = {
 "b2xVn2": "http://www.lighthouselabs.ca",
 "9sm5xK": "http://www.google.com"
 };
 
+
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.set('view engine', 'ejs');
 
 
 //new urls
 app.get("/urls/new", (req, res) => {
+  let templateVars = {username: req.cookies["username"]}
+
   res.render("urlsNew");
 });
 
 //all urls
 app.get("/urls", (req, res) => {
-  let urlObjs = {urls: urlDatabase};
+  let templateVars = {urls: urlDatabase, username: req.cookies["username"]};
 
-  res.render("urlsIndex", urlObjs);
+  res.render("urlsIndex", templateVars);
 });
 
 //redirect to the long url using the short url
@@ -33,12 +38,22 @@ app.get("/u/:shortURL", (req, res) => {
 
 //
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], username: req.cookies["username"]};
 
   res.render("urlsShow", templateVars);
 });
 
+//logouts the user
+app.post("/logout", (req, res) => {
+  res.clearCookie('username', req.body.username);
+  res.redirect(`http://localhost:8080/urls`);
+});
 
+//logins the user
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect(`http://localhost:8080/urls`);
+});
 //delete, beginning of post calls
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
