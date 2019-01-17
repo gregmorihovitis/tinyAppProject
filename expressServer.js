@@ -2,9 +2,17 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 const cookieParser = require('cookie-parser');
-let  urlDatabase = {
-"b2xVn2": "http://www.lighthouselabs.ca",
-"9sm5xK": "http://www.google.com"
+const bodyParser = require("body-parser");
+
+
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+app.set('view engine', 'ejs');
+
+
+const urlDatabase = {
+"b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'user'},
+"9sm5xK": {longURL: "http://www.google.com", userId: 'user3'}
 };
 
 const userDatabase = {
@@ -26,14 +34,6 @@ const userDatabase = {
 };
 
 
-const bodyParser = require("body-parser");
-
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
-
-app.set('view engine', 'ejs');
-
-
 //new urls
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: userDatabase[req.cookies["userId"]]}
@@ -44,6 +44,10 @@ app.get("/urls/new", (req, res) => {
 //all urls
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase, user: userDatabase[req.cookies["userId"]]};
+
+  if(req.cookies['userId'] === undefined){
+    res.redirect('http://localhost:8080/login');
+  }
 
   res.render("urlsIndex", templateVars);
 });
@@ -63,7 +67,7 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id], user: userDatabase[req.cookies["userId"]]};
+  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: userDatabase[req.cookies["userId"]]};
 
   res.render("urlsShow", templateVars);
 });
@@ -142,15 +146,15 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //edit the long url
 app.post("/urls/:id/edit", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newLongURL;
+  urlDatabase[req.params.id] = { longURL: req.body.newLongURL, userId: req.cookies['userId']};
   res.redirect(`http://localhost:8080/urls`);
 });
 
 //add url to database
-app.post("/urls", (req, res) => {
+app.post("/newURL", (req, res) => {
   // console.log(req.body);
   let shortURL = urlGeneration();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userId: req.cookies['userId']};
   res.redirect(`http://localhost:8080/urls`);
 });
 
