@@ -10,16 +10,16 @@
   <% if(user !== undefined){ %>
       <h2>URLS:</h2>
         <ul>
-          <% for(url in urls){ %>
+          <% for(url in urls){%>
+            <% if(urls[url].userId == user.id){ %>
             <form method="POST" action="/urls/<%=url%>/delete">
               <li> <%= url %> : <%= urls[url].longURL%> <a href = 'http://localhost:8080/urls/<%=url%>'>Edit</a> <button>Delete &#9760;</button></li>
               <br>
             </form>
+            <% } %>
           <% }; %>
         </ul>
-      <h3><a href = "http://localhost:8080/urls/new">Shorten a URL</a></h3>
-  <%} else { %>
-    <h2>Please log in to shorten URLs</h2>
   <% } %>
+  <h3><a href = "http://localhost:8080/urls/new">Shorten a URL</a></h3>
 </body>
 </html>

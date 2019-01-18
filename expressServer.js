@@ -3,7 +3,7 @@ const app = express();
 const PORT = 8080;
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
-
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -11,32 +11,37 @@ app.set('view engine', 'ejs');
 
 
 const urlDatabase = {
-"b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'user'},
-"9sm5xK": {longURL: "http://www.google.com", userId: 'user3'}
+// "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'user'},
+// "9sm5xK": {longURL: "http://www.google.com", userId: 'user3'}
 };
 
 const userDatabase = {
-  "user": {
-    id: "user",
-    email: "user@example.com",
-    password: "purplemonkeydinosaur"
-  },
- "user2": {
-    id: "user2",
-    email: "user2@example.com",
-    password: "dishwasherfunk"
-  },
-  'user3': {
-    id: 'user3',
-    email: 'email',
-    password: 'password'
-  }
+ //    "user": {
+ //    id: "user",
+ //    email: "user@example.com",
+ //    password: "purplemonkeydinosaur"
+ //  },
+ // "user2": {
+ //    id: "user2",
+ //    email: "user2@example.com",
+ //    password: "dishwasherfunk"
+ //  },
+ //  'user3': {
+ //    id: 'user3',
+ //    email: 'email',
+ //    password: 'password'
+ //  }
 };
 
 
 //new urls
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: userDatabase[req.cookies["userId"]]}
+
+  if(req.cookies['userId'] === undefined){
+    res.redirect('http://localhost:8080/login');
+  }
+
 
   res.render("urlsNew", templateVars);
 });
@@ -45,16 +50,12 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase, user: userDatabase[req.cookies["userId"]]};
 
-  if(req.cookies['userId'] === undefined){
-    res.redirect('http://localhost:8080/login');
-  }
-
   res.render("urlsIndex", templateVars);
 });
 
 //redirect to the long url using the short url
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -68,6 +69,12 @@ app.get("/register", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: userDatabase[req.cookies["userId"]]};
+
+  if(req.cookies['userId'] === undefined){
+    res.redirect('http://localhost:8080/login');
+  }else if(req.cookies['userId'] !== urlDatabase[req.params.id].userId){
+    res.send('That link doesnt belong to you!');
+  }
 
   res.render("urlsShow", templateVars);
 });
@@ -84,7 +91,7 @@ app.post("/login", (req, res) => {
     if(userDatabase[user].email === req.body.email){
       validEmail = true;
 
-      if(userDatabase[user].password === req.body.password){
+      if(bcrypt.compareSync(req.body.password, userDatabase[user].password)){
         validPassword = true;
         res.cookie('userId', userDatabase[user].id);
         break;
@@ -122,7 +129,7 @@ app.post("/register", (req, res) => {
 
   else{
     res.cookie('userId', randomId);
-    userDatabase[randomId] = {id: randomId, email: req.body.email, password: req.body.password};
+    userDatabase[randomId] = {id: randomId, email: req.body.email, password: bcrypt.hashSync(req.body.password, 10)};
     res.redirect('http://localhost:8080/urls');
   }
 });
