@@ -16,5 +16,5 @@ Used for shortening URLS of websites
 -Run the development web server by running expressServer.js file or npm start
 
 ##Final Product:
-!['Main page while logged in'](#)
-!['Editing URLs you own once logged in'](#)
+!['Main page while logged in'](https://github.com/gregmorihovitis/tinyAppProject/blob/master/docs/mainPageLoggedIn.png?raw=true)
+!['Editing URLs you own once logged in'](https://github.com/gregmorihovitis/tinyAppProject/blob/master/docs/editURLPage.png?raw=true)
