@@ -16,26 +16,9 @@ app.use(cookieSession({
 
 
 const urlDatabase = {
-// "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userId: 'user'},
-// "9sm5xK": {longURL: "http://www.google.com", userId: 'user3'}
 };
 
 const userDatabase = {
- //    "user": {
- //    id: "user",
- //    email: "user@example.com",
- //    password: "purplemonkeydinosaur"
- //  },
- // "user2": {
- //    id: "user2",
- //    email: "user2@example.com",
- //    password: "dishwasherfunk"
- //  },
- //  'user3': {
- //    id: 'user3',
- //    email: 'email',
- //    password: 'password'
- //  }
 };
 
 
@@ -164,7 +147,6 @@ app.post("/urls/:id/edit", (req, res) => {
 
 //add url to database
 app.post("/newURL", (req, res) => {
-  // console.log(req.body);
   let shortURL = urlGeneration();
   urlDatabase[shortURL] = { longURL: req.body.longURL, userId: req.session.userId};
   res.redirect(`http://localhost:8080/urls`);
